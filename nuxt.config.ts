@@ -3,8 +3,9 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  ssr: false,
   devtools: { enabled: true },
-  modules: ['@pinia/nuxt'],
+  modules: ['@pinia/nuxt', '@nuxt/image'],
 
   runtimeConfig: {
     public: {
@@ -13,13 +14,14 @@ export default defineNuxtConfig({
       firebaseProjectId: process.env.NUXT_PUBLIC_FIREBASE_PROJECT_ID,
       firebaseStorageBucket: process.env.NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
       firebaseAppId: process.env.NUXT_PUBLIC_FIREBASE_APP_ID,
+      // firebaseMeasurementId: process.env.NUXT_PUBLIC_FIREBASE_MEASUREMENT_ID
     }
   },
   typescript: {
     strict: true
   },
   nitro: {
-    preset: 'node'
+    preset: 'static'
   },
   app: {
     head: {

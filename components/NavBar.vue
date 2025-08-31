@@ -46,9 +46,9 @@
       <!-- Actions desktop -->
       <div class="hidden lg:flex lg:flex-1 lg:justify-end items-center gap-3">
         <template v-if="user">
-          <span class="text-sm text-gray-200"
-            >Bonjour, {{ user.displayName || "Utilisateur" }}</span
-          >
+          <span class="text-sm text-gray-200">
+            Bonjour, {{ user.displayName || "Utilisateur" }}
+          </span>
           <button
             @click="go('/add')"
             class="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400/50"
@@ -56,7 +56,7 @@
             + Ajouter
           </button>
           <button
-            @click="signOutUser"
+            @click="logout"
             class="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-900 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white/30"
           >
             Se déconnecter
@@ -115,7 +115,6 @@
           <div class="mt-6 flow-root">
             <div class="-my-6 divide-y divide-white/10">
               <div class="space-y-2 py-6">
-                <!-- Liens éventuels du menu -->
                 <NuxtLink
                   to="/"
                   class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold text-white hover:bg-white/10"
@@ -124,22 +123,23 @@
                   Accueil
                 </NuxtLink>
                 <NuxtLink
+                  v-if="user"
                   to="/add"
                   class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold text-white hover:bg-white/10"
                   @click="mobileOpen = false"
-                  v-if="user"
                 >
                   + Ajouter
                 </NuxtLink>
                 <NuxtLink
+                  v-if="user"
                   to="/profile"
                   class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold text-white hover:bg-white/10"
                   @click="mobileOpen = false"
-                  v-if="user"
                 >
                   Profil
                 </NuxtLink>
               </div>
+
               <div class="py-6">
                 <template v-if="user">
                   <button
@@ -157,7 +157,7 @@
                     @click="
                       () => {
                         mobileOpen = false;
-                        signOutUser();
+                        logout();
                       }
                     "
                     class="w-full rounded-lg px-3 py-2 text-base font-semibold text-gray-900 bg-white hover:bg-gray-100"
@@ -192,8 +192,18 @@ import { Dialog, DialogPanel, TransitionRoot } from "@headlessui/vue";
 import { useAuth } from "@/composables/useAuth";
 
 const { user, signInWithGoogle, signOutUser } = useAuth();
+
 const router = useRouter();
 const go = (p: string) => router.push(p);
-
 const mobileOpen = ref(false);
+
+const logout = async () => {
+  try {
+    await signOutUser();
+    // Redirection fiable après déconnexion
+    await navigateTo("/login", { replace: true });
+  } catch (e) {
+    console.error("Erreur déconnexion:", e);
+  }
+};
 </script>

@@ -1,11 +1,11 @@
-
 # App Maison – Gestion de stock (Nuxt 3 + Pinia + Firebase)
 
 MVP prêt à lancer : connexion Google, liste des articles, ajout/soustraction de quantités, upload d'image compressée côté client, sécurité Firestore par `familyId`.
 
 ## Démarrage
 
-1. **Cloner et installer**  
+1. **Cloner et installer**
+
    ```bash
    pnpm i # ou npm i / yarn
    ```
@@ -14,10 +14,12 @@ MVP prêt à lancer : connexion Google, liste des articles, ajout/soustraction d
    Crée une app Web et copie les variables dans `.env` (voir `.env.example`).
 
 3. **Règles de sécurité**
+
    - Firestore Rules → coller le contenu de `firestore.rules`
    - Storage Rules → coller le contenu de `storage.rules`
 
-4. **Lancer en local**  
+4. **Lancer en local**
+
    ```bash
    pnpm dev
    ```
@@ -43,8 +45,17 @@ families/{familyId}/items/{itemId}
 ```
 
 ## Roadmap rapide
+
 - [ ] Multi-utilisateur (invitation par email → même `familyId`)
 - [ ] PWA + offline queue
 - [ ] Détection nom via Vision API locale (tesseract.js) ou Cloud Vision
 - [ ] Import tickets Drive/Docs
+
 # app-gestion-maison-firebase
+
+## API
+
+- **Firebase Auth**: pour l'authentification (Google, email/password)
+- **Firestore**: pour la base de données
+- **Firebase Storage**: pour le stockage des images
+- **Recipes**:https://spoonacular.com/food-api

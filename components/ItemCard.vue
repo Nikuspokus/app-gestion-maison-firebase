@@ -1,45 +1,58 @@
-<template>
-  <div class="card flex gap-3 items-start">
-    <img
-      v-if="item.imageUrl"
-      :src="item.imageUrl"
-      alt=""
-      class="w-16 h-16 object-cover rounded"
-      @error="(e) => console.warn('Image introuvable:', item.imageUrl)"
-    />
-    <div class="flex-1">
-      <div class="flex items-center justify-between">
-        <h3 class="font-semibold">{{ item.name }}</h3>
-        <span class="text-sm opacity-70"
-          >{{ item.quantity }} {{ item.unit }}</span
-        >
-      </div>
-
-      <div class="mt-2 flex gap-2">
-        <input v-model.number="amount" type="number" min="1" class="w-24" />
-        <button class="btn" @click="emit('subtract', { id: item.id, amount })">
-          - Soustraire
-        </button>
-
-        <!-- 🗑 Bouton supprimer -->
-        <button
-          class="btn"
-          style="background: #ef4444; color: #fff; border: none"
-          @click="emit('delete', item.id)"
-          title="Supprimer l'article"
-        >
-          🗑 Supprimer
-        </button>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-const props = defineProps<{ item: any }>();
+import type { Item } from "@/types";
+
+defineProps<{ item: Item }>();
 const emit = defineEmits<{
   (e: "subtract", payload: { id: string; amount: number }): void;
   (e: "delete", id: string): void;
+  (e: "add", id: string): void; // ✅ nouveau
 }>();
-const amount = ref(1);
 </script>
+
+<template>
+  <div
+    class="rounded-xl bg-white p-4 m-2 shadow-sm flex items-stretch justify-between gap-3"
+  >
+    <!-- Colonne gauche : infos -->
+    <div>
+      <div class="font-semibold">{{ item.name }}</div>
+      <div class="text-sm text-gray-500">
+        {{ item.quantity }} {{ item.unit }}
+      </div>
+    </div>
+
+    <!-- Colonne droite : boutons en colonne, space-between -->
+    <div class="flex flex-col justify-between">
+      <!-- Rangée du haut : + / - -->
+      <div
+        class="flex items-center gap-2"
+        style="justify-content: space-between; margin-bottom: 0.6em"
+      >
+        <button
+          class="rounded-lg px-3 py-1.5 bg-rose-600 text-white hover:bg-rose-500"
+          @click="emit('subtract', { id: item.id, amount: 1 })"
+          title="Soustraire une unité"
+        >
+          −
+        </button>
+
+        <button
+          class="rounded-lg px-3 py-1.5 bg-indigo-600 text-white hover:bg-indigo-500"
+          @click="emit('add', item.id)"
+          title="Ajouter de la quantité"
+        >
+          +
+        </button>
+      </div>
+
+      <!-- Bas de colonne : Supprimer -->
+      <button
+        class="rounded-lg px-3 py-1.5 border hover:bg-gray-50"
+        @click="emit('delete', item.id)"
+        title="Supprimer l'article"
+      >
+        Supprimer
+      </button>
+    </div>
+  </div>
+</template>

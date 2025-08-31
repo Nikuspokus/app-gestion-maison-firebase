@@ -1,8 +1,9 @@
 // plugins/firebase.client.ts
+import { defineNuxtPlugin, useRuntimeConfig } from '#app'
 import { initializeApp, getApps } from 'firebase/app'
 import { getAuth, GoogleAuthProvider } from 'firebase/auth'
-import { getFirestore } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
+import { initializeFirestore } from 'firebase/firestore'
 
 export default defineNuxtPlugin(() => {
     const cfg = useRuntimeConfig().public
@@ -11,24 +12,29 @@ export default defineNuxtPlugin(() => {
         apiKey: cfg.firebaseApiKey,
         authDomain: cfg.firebaseAuthDomain,
         projectId: cfg.firebaseProjectId,
-        storageBucket: cfg.firebaseStorageBucket, // ✅ IMPORTANT
+        storageBucket: cfg.firebaseStorageBucket,
         appId: cfg.firebaseAppId,
     }
 
     const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig)
 
-    // (facultatif) petit log pour valider le bucket à l’exécution
-    if (process.dev) console.log('Storage bucket =', firebaseConfig.storageBucket)
+    // 👉 corrige les erreurs “WebChannel … transport errored / 400”
+    const db = initializeFirestore(app, {
+        experimentalAutoDetectLongPolling: true,
+        // experimentalForceLongPolling: true, // seulement si nécessaire
+    })
+
+    const auth = getAuth(app)
+    const storage = getStorage(app)
+
+    if (process.dev) {
+        console.log('[Firebase] projectId:', firebaseConfig.projectId)
+        console.log('[Firebase] storageBucket:', firebaseConfig.storageBucket)
+    }
 
     return {
         provide: {
-            firebase: {
-                app,
-                auth: getAuth(app),
-                db: getFirestore(app),
-                storage: getStorage(app), // utilisera le bucket fourni ci-dessus
-                GoogleAuthProvider
-            }
+            firebase: { app, auth, db, storage, GoogleAuthProvider }
         }
     }
 })

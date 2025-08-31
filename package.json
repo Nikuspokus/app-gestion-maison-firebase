@@ -12,14 +12,16 @@
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.23",
+    "@nuxt/image": "^1.11.0",
     "@pinia/nuxt": "^0.5.1",
     "@tailwindcss/vite": "^4.1.12",
-    "firebase": "^10.12.2",
+    "firebase": "^12.1.0",
     "nuxt": "^3.12.4",
     "pinia": "^2.1.7",
     "tailwindcss": "^4.1.12"
   },
   "devDependencies": {
+    "@vite-pwa/nuxt": "^1.0.4",
     "typescript": "^5.4.5",
     "vue-tsc": "^2.0.21"
   }

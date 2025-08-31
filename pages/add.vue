@@ -71,7 +71,7 @@
     >
       <div
         v-if="showToast"
-        class="fixed bottom-6 right-6 flex items-center gap-3 rounded-xl bg-white shadow-lg border border-gray-200 px-4 py-3"
+        class="fixed bottom-6 right-6 flex items-center gap-3 rounded-xl bg-white shadow-lg border-gray-200 px-4 py-3"
       >
         <svg
           class="size-6 text-green-500"
@@ -93,13 +93,15 @@
 </template>
 
 <script setup lang="ts">
-import ImageUploader from "@/components/ImageUploader.vue";
-import { useItemsStore } from "@/stores/items";
-import { useAuth } from "@/composables/useAuth";
+import ImageUploader from "../components/ImageUploader.vue";
+import { useItemsStore } from "../stores/items";
+import { useAuth } from "../composables/useAuth";
+import { ref } from "vue";
+import { navigateTo } from "nuxt/app";
 
 definePageMeta({ middleware: "auth" });
 
-const { user } = useAuth();
+const { user, familyId } = useAuth(); // ✅ ajouter familyId
 const store = useItemsStore();
 
 const name = ref("");
@@ -117,20 +119,28 @@ function resetForm() {
 }
 
 const save = async () => {
-  await store.add({
-    name: name.value,
-    quantity: quantity.value,
-    unit: unit.value,
-    file: file.value || undefined,
-  });
+  try {
+    console.log("user.uid =", user.value?.uid);
+    console.log("familyId =", familyId.value); // ✅ debug
 
-  // ✅ reset du formulaire
-  resetForm();
+    if (!user.value) throw new Error("Non connecté");
+    if (!familyId.value) throw new Error("familyId manquant");
 
-  // ✅ affichage toast
-  showToast.value = true;
-  setTimeout(() => {
-    showToast.value = false;
-  }, 3000);
+    await store.add({
+      name: name.value,
+      quantity: quantity.value,
+      unit: unit.value,
+      file: file.value ?? undefined,
+    });
+
+    resetForm();
+    showToast.value = true;
+    await navigateTo("/stock");
+  } catch (e) {
+    console.error("Erreur à l’enregistrement", e);
+    alert((e as Error).message); // optionnel pour voir l’erreur
+  } finally {
+    setTimeout(() => (showToast.value = false), 1000);
+  }
 };
 </script>
